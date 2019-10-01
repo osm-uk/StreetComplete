@@ -8,6 +8,11 @@ import de.westnordost.streetcomplete.data.osm.download.MapDataWithGeometryHandle
 
 interface OsmElementQuestType<T> : QuestType<T> {
 
+    fun getTitleArgs(tags: Map<String, String>, featureName: Lazy<String?>): Array<String?> {
+        val name = tags["name"] ?: tags["brand"]
+        return if (name != null) arrayOf(name) else arrayOf()
+    }
+
     /** the commit message to be used for this quest type */
     val commitMessage: String
 
@@ -19,6 +24,9 @@ interface OsmElementQuestType<T> : QuestType<T> {
 
     /** returns whether the markers should be at the ends instead of the center */
     val hasMarkersAtEnds: Boolean get() = false
+
+    /** returns whether the user should be able to split the way instead */
+    val isSplitWayEnabled: Boolean get() = false
 
     /** returns title resource for when the element has the specified [tags]. The tags are unmodifiable */
     fun getTitle(tags: Map<String, String>): Int

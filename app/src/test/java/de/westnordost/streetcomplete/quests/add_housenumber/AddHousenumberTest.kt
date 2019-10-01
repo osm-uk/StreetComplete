@@ -15,7 +15,7 @@ class AddHousenumberTest {
 
     private val questType = AddHousenumber(mock(OverpassMapDataDao::class.java))
 
-    @Test fun regex() {
+    @Test fun `housenumber regex`() {
         val r = AddHousenumberForm.VALID_HOUSENUMBER_REGEX.toRegex()
         assertTrue("1".matches(r))
         assertTrue("1234".matches(r))
@@ -32,6 +32,17 @@ class AddHousenumberTest {
         assertFalse("1234 5".matches(r))
         assertFalse("1234/55".matches(r))
         assertFalse("1234AB".matches(r))
+    }
+
+    @Test fun `blocknumber regex`() {
+        val r = AddHousenumberForm.VALID_BLOCKNUMBER_REGEX.toRegex()
+        assertTrue("1".matches(r))
+        assertTrue("1234".matches(r))
+        assertFalse("12345".matches(r))
+
+        assertTrue("1234a".matches(r))
+        assertTrue("1234 a".matches(r))
+        assertFalse("1234 ab".matches(r))
     }
 
     @Test fun `apply house number answer`() {
@@ -65,10 +76,18 @@ class AddHousenumberTest {
         )
     }
 
-    @Test fun `apply no address answer`() {
+    @Test fun `apply block and house number answer`() {
         questType.verifyAnswer(
-            NoAddress,
-            StringMapEntryAdd("noaddress", "yes")
+            HouseAndBlockNumber("12A", "123"),
+            StringMapEntryAdd("addr:block_number", "123"),
+            StringMapEntryAdd("addr:housenumber", "12A")
+        )
+    }
+
+    @Test fun `apply no house number answer`() {
+        questType.verifyAnswer(
+            NoHouseNumber,
+            StringMapEntryAdd("nohousenumber", "yes")
         )
     }
 }
